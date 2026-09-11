@@ -1,9 +1,0 @@
-services:
-  app:
-    image: drift-watch-test
-    environment:
-      DATABASE_URL: "https://localhost:3306/mydb"
-      API_KEY: development-compose-key
-      PORT: 3000
-      DEBUG: true
-      COMPOSE_ONLY_KEY: compose-value

@@ -50,9 +50,10 @@ def run_drift_watch():
 
 def parse_report(output):
     pattern = re.compile(
-        r"^- \*\*(?P<key>.+?)\*\* — `(?P<category>[^`]+)` "
-        r"\(`(?P<severity>Critical|Warning|Info)`\) — "
-        r"`(?P<environment>[^`]+)`$",
+        r"^\s*-\s*\*\*(?P<key>.+?)\*\*\s+[—-]\s+"
+        r"`(?P<category>[^`]+)`\s+"
+        r"\(`(?P<severity>Critical|Warning|Info)`\)\s+[—-]\s+"
+        r"`(?P<environment>[^`]+)`\s*$",
         re.MULTILINE,
     )
 
