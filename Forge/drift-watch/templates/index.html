@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Drift Watch</title>
+    <style>
+        body { font-family: sans-serif; margin: 2rem auto; max-width: 960px; padding: 0 1rem; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: .6rem; text-align: left; }
+        th { background: #f3f3f3; }
+        .critical { color: #a00; }
+        .warning { color: #a60; }
+        .info { color: #06c; }
+        .error { background: #fee; border: 1px solid #c00; padding: 1rem; }
+    </style>
+</head>
+<body>
+    <h1>Drift Watch</h1>
+
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <p>
+        Total: {{ summary.total }} |
+        Critical: {{ summary.critical }} |
+        Warning: {{ summary.warning }} |
+        Info: {{ summary.info }}
+    </p>
+
+    {% if findings %}
+    <table>
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Severity</th>
+                <th>Environment</th>
+                <th>Category</th>
+                <th>Reference</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for finding in findings %}
+            <tr>
+                <td>{{ finding.key }}</td>
+                <td class="{{ finding.severity|lower }}">{{ finding.severity }}</td>
+                <td>{{ finding.environment }}</td>
+                <td>{{ finding.category }}</td>
+                <td>{{ finding.location }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No drift findings.</p>
+    {% endif %}
+</body>
+</html>
