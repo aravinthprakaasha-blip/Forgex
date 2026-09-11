@@ -3,159 +3,57 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Drift Watch | Configuration health</title>
+    <title>Drift Watch</title>
     <style>
-        :root {
-            --ink: #eef2ed;
-            --muted: #93a099;
-            --canvas: #111714;
-            --panel: #19211d;
-            --panel-raised: #202b25;
-            --line: #2d3b33;
-            --lime: #c7f36b;
-            --lime-soft: rgba(199, 243, 107, .12);
-            --red: #ff827b;
-            --red-soft: rgba(255, 130, 123, .12);
-            --amber: #f4c76a;
-            --amber-soft: rgba(244, 199, 106, .12);
-            --blue: #8cc8ff;
-            --blue-soft: rgba(140, 200, 255, .12);
-        }
-
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            min-width: 320px;
-            color: var(--ink);
-            background: var(--canvas);
-            font-family: Georgia, "Times New Roman", serif;
-        }
-        button, input { font: inherit; }
-        button { cursor: pointer; }
-        .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 34px 0 60px; }
-        .topbar { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 62px; }
-        .brand { display: flex; align-items: center; gap: 12px; font-size: 18px; font-weight: 700; letter-spacing: .02em; }
-        .brand-mark { display: grid; place-items: center; width: 32px; height: 32px; color: var(--canvas); background: var(--lime); border-radius: 9px; font-family: Arial, sans-serif; font-size: 17px; font-weight: 900; }
-        .topbar-meta { display: flex; align-items: center; gap: 14px; color: var(--muted); font: 12px Arial, sans-serif; }
-        .pulse { display: inline-flex; align-items: center; gap: 7px; }
-        .pulse::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 4px var(--lime-soft); }
-        .refresh { display: inline-flex; align-items: center; gap: 8px; padding: 9px 13px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 7px; font: 600 12px Arial, sans-serif; }
-        .refresh:hover { border-color: var(--lime); color: var(--lime); }
-        .hero { display: grid; grid-template-columns: 1.2fr .8fr; gap: 44px; align-items: end; margin-bottom: 42px; }
-        .eyebrow { margin: 0 0 14px; color: var(--lime); font: 700 11px Arial, sans-serif; letter-spacing: .18em; text-transform: uppercase; }
-        h1 { max-width: 650px; margin: 0; font-size: clamp(42px, 6vw, 78px); line-height: .94; letter-spacing: -.045em; font-weight: 700; }
-        .hero-copy { max-width: 360px; margin: 0 0 5px; color: var(--muted); font: 15px/1.55 Arial, sans-serif; }
-        .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 36px; }
-        .metric { min-height: 116px; padding: 18px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
-        .metric-label { color: var(--muted); font: 11px Arial, sans-serif; letter-spacing: .1em; text-transform: uppercase; }
-        .metric-value { margin-top: 12px; font-size: 38px; line-height: 1; }
-        .metric.critical { border-color: rgba(255, 130, 123, .32); background: linear-gradient(135deg, var(--red-soft), var(--panel) 65%); }
-        .metric.critical .metric-value { color: var(--red); }
-        .metric.warning { border-color: rgba(244, 199, 106, .32); background: linear-gradient(135deg, var(--amber-soft), var(--panel) 65%); }
-        .metric.warning .metric-value { color: var(--amber); }
-        .metric.info { border-color: rgba(140, 200, 255, .28); background: linear-gradient(135deg, var(--blue-soft), var(--panel) 65%); }
-        .metric.info .metric-value { color: var(--blue); }
-        .workspace { overflow: hidden; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
-        .workspace-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 20px; border-bottom: 1px solid var(--line); }
-        .workspace-title { margin: 0; font-size: 23px; }
-        .workspace-subtitle { margin: 5px 0 0; color: var(--muted); font: 12px Arial, sans-serif; }
-        .controls { display: flex; align-items: center; gap: 8px; }
-        .search { width: 190px; padding: 9px 11px; color: var(--ink); background: var(--canvas); border: 1px solid var(--line); border-radius: 6px; outline: none; font: 12px Arial, sans-serif; }
-        .search:focus, .filter:focus { border-color: var(--lime); }
-        .filter { padding: 9px 10px; color: var(--muted); background: var(--canvas); border: 1px solid var(--line); border-radius: 6px; font: 12px Arial, sans-serif; }
-        .error { margin: 20px; padding: 15px 17px; color: var(--red); background: var(--red-soft); border: 1px solid rgba(255, 130, 123, .35); border-radius: 7px; font: 13px/1.5 Arial, sans-serif; }
-        .finding-list { display: grid; }
-        .finding { display: grid; grid-template-columns: minmax(190px, 1.1fr) 120px 140px minmax(180px, 1fr); gap: 18px; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--line); }
-        .finding:last-child { border-bottom: 0; }
-        .finding:hover { background: var(--panel-raised); }
-        .finding-key { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 14px/1.3 Consolas, monospace; }
-        .finding-category { margin-top: 5px; color: var(--muted); font: 11px Arial, sans-serif; }
-        .badge { display: inline-flex; width: fit-content; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 5px; font: 700 10px Arial, sans-serif; letter-spacing: .06em; text-transform: uppercase; }
-        .badge::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
-        .badge.critical { color: var(--red); background: var(--red-soft); }
-        .badge.warning { color: var(--amber); background: var(--amber-soft); }
-        .badge.info { color: var(--blue); background: var(--blue-soft); }
-        .environment { color: var(--ink); font: 12px Arial, sans-serif; }
-        .reference { overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; font: 12px Consolas, monospace; }
-        .empty { padding: 48px 20px; color: var(--muted); text-align: center; font: 14px Arial, sans-serif; }
-        .footer { display: flex; justify-content: space-between; gap: 20px; margin-top: 18px; color: var(--muted); font: 11px Arial, sans-serif; }
-        @media (max-width: 760px) {
-            .shell { width: min(100% - 24px, 620px); padding-top: 22px; }
-            .topbar { margin-bottom: 42px; }
-            .topbar-meta { gap: 8px; }
-            .hero { display: block; margin-bottom: 28px; }
-            .hero-copy { margin-top: 20px; }
-            .summary { grid-template-columns: repeat(2, 1fr); }
-            .workspace-head { align-items: flex-start; flex-direction: column; }
-            .controls { width: 100%; }
-            .search { flex: 1; width: auto; }
-            .finding { grid-template-columns: 1fr auto; gap: 10px 14px; }
-            .finding-key, .reference { grid-column: 1 / -1; }
-        }
-        @media (max-width: 430px) {
-            .topbar-meta .pulse { display: none; }
-            h1 { font-size: 48px; }
-            .metric { min-height: 100px; padding: 14px; }
-            .metric-value { font-size: 30px; }
-        }
+        body { font-family: sans-serif; margin: 2rem auto; max-width: 960px; padding: 0 1rem; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: .6rem; text-align: left; }
+        th { background: #f3f3f3; }
+        .critical { color: #a00; }
+        .warning { color: #a60; }
+        .info { color: #06c; }
+        .error { background: #fee; border: 1px solid #c00; padding: 1rem; }
     </style>
 </head>
 <body>
-    <main class="shell">
-        <header class="topbar">
-            <div class="brand"><span class="brand-mark">D</span> Drift Watch</div>
-            <div class="topbar-meta"><span class="pulse">Scanner online</span><button class="refresh" type="button" onclick="window.location.reload()">↻ Refresh</button></div>
-        </header>
-        <section class="hero">
-            <div><p class="eyebrow">Configuration observability</p><h1>Know what changed before it ships.</h1></div>
-            <p class="hero-copy">A quiet view of the variables your code expects, the environments that provide them, and the drift that needs attention.</p>
-        </section>
-        <section class="summary" aria-label="Finding summary">
-            <div class="metric"><div class="metric-label">Total findings</div><div class="metric-value">{{ summary.total }}</div></div>
-            <div class="metric critical"><div class="metric-label">Critical</div><div class="metric-value">{{ summary.critical }}</div></div>
-            <div class="metric warning"><div class="metric-label">Warnings</div><div class="metric-value">{{ summary.warning }}</div></div>
-            <div class="metric info"><div class="metric-label">Informational</div><div class="metric-value">{{ summary.info }}</div></div>
-        </section>
-        <section class="workspace">
-            <div class="workspace-head">
-                <div><h2 class="workspace-title">Open findings</h2><p class="workspace-subtitle">Values are never displayed or stored.</p></div>
-                <div class="controls"><input class="search" id="search" type="search" placeholder="Search findings..." aria-label="Search findings"><select class="filter" id="severity" aria-label="Filter by severity"><option value="">All severity</option><option value="Critical">Critical</option><option value="Warning">Warning</option><option value="Info">Info</option></select></div>
-            </div>
-            {% if error %}<div class="error">{{ error }}</div>{% endif %}
-            {% if findings %}
-            <div class="finding-list" id="finding-list">
-                {% for finding in findings %}
-                <article class="finding" data-search="{{ finding.key }} {{ finding.category }} {{ finding.environment }} {{ finding.location }}" data-severity="{{ finding.severity }}">
-                    <div><div class="finding-key">{{ finding.key }}</div><div class="finding-category">{{ finding.category }}</div></div>
-                    <span class="badge {{ finding.severity|lower }}">{{ finding.severity }}</span>
-                    <div class="environment">{{ finding.environment }}</div>
-                    <div class="reference">{{ finding.location }}</div>
-                </article>
-                {% endfor %}
-            </div>
-            <div class="empty" id="no-results" hidden>No findings match this filter.</div>
-            {% else %}<div class="empty">No drift findings.</div>{% endif %}
-        </section>
-        <footer class="footer"><span>Drift Watch / Local workspace</span><span>Last scan: just now</span></footer>
-    </main>
-    <script>
-        const search = document.getElementById("search");
-        const severity = document.getElementById("severity");
-        const findings = [...document.querySelectorAll(".finding")];
-        const noResults = document.getElementById("no-results");
-        function filterFindings() {
-            const query = search.value.toLowerCase().trim();
-            const selected = severity.value;
-            let visible = 0;
-            findings.forEach((finding) => {
-                const show = finding.dataset.search.toLowerCase().includes(query) && (!selected || finding.dataset.severity === selected);
-                finding.hidden = !show;
-                if (show) visible += 1;
-            });
-            if (noResults) noResults.hidden = visible !== 0;
-        }
-        if (search) search.addEventListener("input", filterFindings);
-        if (severity) severity.addEventListener("change", filterFindings);
-    </script>
+    <h1>Drift Watch</h1>
+
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <p>
+        Total: {{ summary.total }} |
+        Critical: {{ summary.critical }} |
+        Warning: {{ summary.warning }} |
+        Info: {{ summary.info }}
+    </p>
+
+    {% if findings %}
+    <table>
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Severity</th>
+                <th>Environment</th>
+                <th>Category</th>
+                <th>Reference</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for finding in findings %}
+            <tr>
+                <td>{{ finding.key }}</td>
+                <td class="{{ finding.severity|lower }}">{{ finding.severity }}</td>
+                <td>{{ finding.environment }}</td>
+                <td>{{ finding.category }}</td>
+                <td>{{ finding.location }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No drift findings.</p>
+    {% endif %}
 </body>
 </html>
